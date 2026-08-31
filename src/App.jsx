@@ -1,29 +1,15 @@
-import UserCard from './components/UserCard'
+import ColorText from './components/ColorText'
+import Counter from './components/Counter'
+import LiveInput from './components/LiveInput'
+import ToggleText from './components/ToggleText'
 
 function App() {
   return (
     <div>
-      <UserCard
-        name="Павел"
-        role="Frontend-разработчик"
-        experience={3}
-        location={{ city: 'Минск', country: 'Беларусь' }}
-        isAvailable={true}
-      />
-      <UserCard
-        name="Кристина"
-        role="Frontend-разработчик"
-        experience={3}
-        location={{ city: 'Минск', country: 'Беларусь' }}
-        isAvailable={true}
-      />
-      <UserCard
-        name="Иван"
-        role="Frontend-разработчик"
-        experience={3}
-        location={{ city: 'Минск', country: 'Беларусь' }}
-        isAvailable={false}
-      />
+      <Counter />
+      <ToggleText />
+      <LiveInput />
+      <ColorText />
     </div>
   )
 }
