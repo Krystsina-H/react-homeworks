@@ -1,9 +1,13 @@
-import ParentComponent from './components/ParentComponent'
+import ShoppingCart from './components/ShoppingCart'
+import ToDo from './components/ToDo'
+import UserProfil from './components/UserProfil'
 
 function App() {
   return (
     <div>
-      <ParentComponent />
+      <UserProfil />
+      <ToDo />
+      <ShoppingCart />
     </div>
   )
 }
