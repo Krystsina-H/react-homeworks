@@ -1,13 +1,26 @@
-import ShoppingCart from './components/ShoppingCart'
-import ToDo from './components/ToDo'
-import UserProfil from './components/UserProfil'
+import ActionButton from './components/ActionButton'
+import ClickPractice from './components/ClickPractice'
+import FormPractice from './components/FormPractice'
+import InputPractice from './components/InputPractice'
 
 function App() {
   return (
     <div>
-      <UserProfil />
-      <ToDo />
-      <ShoppingCart />
+      <ClickPractice />
+      <InputPractice />
+      <FormPractice />
+      <ActionButton
+        buttonText={'Сохранить'}
+        func={() => {
+          console.log('Сохранено')
+        }}
+      />
+      <ActionButton
+        buttonText={'Удалить'}
+        func={() => {
+          console.log('Удалено')
+        }}
+      />
     </div>
   )
 }
