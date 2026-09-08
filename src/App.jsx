@@ -1,50 +1,64 @@
-import List from './components/List'
-import { useRef, useState } from 'react'
+import { useState, useEffect } from 'react'
+import DogGallery from './components/DogGallery'
+import GalleryControls from './components/GalleryControls'
+import './App.css'
 
-function App() {
-  const [users, setUsers] = useState([
-    { id: 1, name: 'Анна', age: 25 },
-    { id: 2, name: 'Максим', age: 30 },
-    { id: 3, name: 'Елена', age: 22 },
-    { id: 4, name: 'Дмитрий', age: 35 },
-    { id: 5, name: 'Ольга', age: 28 },
-    { id: 6, name: 'Сергей', age: 40 },
-    { id: 7, name: 'Мария', age: 19 },
-    { id: 8, name: 'Иван', age: 33 },
-    { id: 9, name: 'Татьяна', age: 27 },
-    { id: 10, name: 'Алексей', age: 29 },
-  ])
-  const inputRef = useRef(null)
+const App = () => {
+  const [dogs, setDogs] = useState([])
+  const [count, setCount] = useState(3)
+  const [refreshes, setRefreshes] = useState(0)
+  const [isLoading, setIsLoading] = useState(false)
+  const [breeds, setBreeds] = useState([])
+  const [selectedBreed, setSelectedBreed] = useState('')
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      const newUser = {
-        id: Date.now(),
-        name: e.target.value,
-        age: Math.floor(Math.random() * 30) + 18,
-      }
-      setUsers([...users, newUser])
-      e.target.value = ''
+  async function loadDogs(breed = selectedBreed) {
+    setIsLoading(true)
+    try {
+      const url = breed
+        ? `https://dog.ceo/api/breed/${breed}/images/random/${count}`
+        : `https://dog.ceo/api/breeds/image/random/${count}`
+      const response = await fetch(url)
+      const data = await response.json()
+      setDogs(data.message)
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setIsLoading(false)
     }
   }
 
-  const handleClick = () => {
-    inputRef.current.focus()
-  }
+  useEffect(() => {
+    loadDogs()
+  }, [])
+
+  useEffect(() => {
+    async function loadBreeds() {
+      try {
+        const response = await fetch('https://dog.ceo/api/breeds/list/all')
+        const data = await response.json()
+        setBreeds(Object.keys(data.message))
+      } catch (error) {
+        console.error(error)
+      }
+    }
+    loadBreeds()
+  }, [])
+
   return (
     <>
-      <div>
-        <input
-          ref={inputRef}
-          type="text"
-          onKeyDown={handleKeyDown}
-          placeholder="Введите имя"
-        />
-        <button onClick={handleClick}>Фокус</button>
-      </div>
-      <List users={users} />
+      <h1>Галерея собак</h1>
+      <p>Картинки обновлены {refreshes} раз(а)</p>
+      <GalleryControls
+        count={count}
+        setCount={setCount}
+        setRefreshes={setRefreshes}
+        loadDogs={loadDogs}
+        selectedBreed={selectedBreed}
+        setSelectedBreed={setSelectedBreed}
+        breeds={breeds}
+      />
+      <DogGallery dogs={dogs} isLoading={isLoading} />
     </>
   )
 }
-
 export default App
