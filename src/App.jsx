@@ -1,63 +1,60 @@
-import { useState, useEffect } from 'react'
-import DogGallery from './components/DogGallery'
-import GalleryControls from './components/GalleryControls'
+import { useState } from 'react'
+import ListWithoutKey from './components/ListWithoutKey'
+import ListWithKey from './components/ListWithKey'
 import './App.css'
 
 const App = () => {
-  const [dogs, setDogs] = useState([])
-  const [count, setCount] = useState(3)
-  const [refreshes, setRefreshes] = useState(0)
-  const [isLoading, setIsLoading] = useState(false)
-  const [breeds, setBreeds] = useState([])
-  const [selectedBreed, setSelectedBreed] = useState('')
+  const item = (id) => ({
+    id,
+    title: `Элемент ${id}`,
+  })
+  const arr = Array.from({ length: 10 }, (_, index) => item(index + 1))
+  console.log(arr)
 
-  async function loadDogs(breed = selectedBreed) {
-    setIsLoading(true)
-    try {
-      const url = breed
-        ? `https://dog.ceo/api/breed/${breed}/images/random/${count}`
-        : `https://dog.ceo/api/breeds/image/random/${count}`
-      const response = await fetch(url)
-      const data = await response.json()
-      setDogs(data.message)
-    } catch (error) {
-      console.error(error)
-    } finally {
-      setIsLoading(false)
-    }
+  const [items, setItems] = useState(arr)
+  const [showElements, setShowElements] = useState(false)
+
+  const addToStart = () => {
+    const newItem = item(items.length + 1)
+    setItems([newItem, ...items])
   }
-
-  useEffect(() => {
-    loadDogs()
-  }, [])
-
-  useEffect(() => {
-    async function loadBreeds() {
-      try {
-        const response = await fetch('https://dog.ceo/api/breeds/list/all')
-        const data = await response.json()
-        setBreeds(Object.keys(data.message))
-      } catch (error) {
-        console.error(error)
-      }
-    }
-    loadBreeds()
-  }, [])
+  const addToEnd = () => {
+    const newItem = item(items.length + 1)
+    setItems([...items, newItem])
+  }
+  const removeFirst = () => {
+    setItems((items) => items.slice(1))
+  }
+  const shuffleItems = () => {
+    const shuffled = [...items].sort(() => Math.random() - 0.5)
+    setItems(shuffled)
+  }
+  const updateRandom = () => {
+    const randomIndex = Math.floor(Math.random() * items.length)
+    setItems((currentItems) =>
+      currentItems.map((item, index) =>
+        index === randomIndex
+          ? { ...item, title: `${item.title} — обновлён` }
+          : item
+      )
+    )
+  }
 
   return (
     <>
-      <h1>Галерея собак</h1>
-      <p>Картинки обновлены {refreshes} раз(а)</p>
-      <GalleryControls
-        count={count}
-        setCount={setCount}
-        setRefreshes={setRefreshes}
-        loadDogs={loadDogs}
-        selectedBreed={selectedBreed}
-        setSelectedBreed={setSelectedBreed}
-        breeds={breeds}
-      />
-      <DogGallery dogs={dogs} isLoading={isLoading} />
+      <button onClick={() => setShowElements((item) => !item)}>
+        {showElements ? 'Показать неправильный key' : 'Показать правильный key'}
+      </button>
+      {showElements ? (
+        <ListWithKey items={items} />
+      ) : (
+        <ListWithoutKey items={items} />
+      )}
+      <button onClick={addToStart}>Добавить в начало</button>
+      <button onClick={addToEnd}>Добавить в конец</button>
+      <button onClick={removeFirst}>Удалить первый</button>
+      <button onClick={shuffleItems}>Перемешать список</button>
+      <button onClick={updateRandom}>Обновить случайный элемент</button>
     </>
   )
 }
