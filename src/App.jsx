@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import ListWithoutKey from './components/ListWithoutKey'
 import ListWithKey from './components/ListWithKey'
+import ThemeContext from './contexts/ThemeContext'
 import './App.css'
 
 const App = () => {
@@ -11,6 +12,7 @@ const App = () => {
   const arr = Array.from({ length: 10 }, (_, index) => item(index + 1))
   console.log(arr)
 
+  const { theme, toggleTheme } = useContext(ThemeContext)
   const [items, setItems] = useState(arr)
   const [showElements, setShowElements] = useState(false)
 
@@ -41,7 +43,8 @@ const App = () => {
   }
 
   return (
-    <>
+    <div className={`theme theme--${theme}`}>
+      <button onClick={() => toggleTheme()}>Сменить тему</button>
       <button onClick={() => setShowElements((item) => !item)}>
         {showElements ? 'Показать неправильный key' : 'Показать правильный key'}
       </button>
@@ -55,7 +58,7 @@ const App = () => {
       <button onClick={removeFirst}>Удалить первый</button>
       <button onClick={shuffleItems}>Перемешать список</button>
       <button onClick={updateRandom}>Обновить случайный элемент</button>
-    </>
+    </div>
   )
 }
 export default App
