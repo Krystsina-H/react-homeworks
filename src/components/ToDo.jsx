@@ -1,6 +1,15 @@
-import { useState } from 'react'
+import { memo, useState } from 'react'
+
+const TaskItem = memo(({ item }) => {
+  console.log('Рендер задачи: ', item)
+  return <li key={item.id}>{item.title}</li>
+})
+
 const ToDo = () => {
-  const [tasks, setTasks] = useState(['Купить хлеб', 'Погулять с собакой'])
+  const [tasks, setTasks] = useState([
+    { id: 1, title: 'Купить хлеб' },
+    { id: 2, title: 'Погулять с собакой' },
+  ])
 
   const randomTasks = [
     'Помыть посуду',
@@ -18,7 +27,10 @@ const ToDo = () => {
   const handleAddTask = () => {
     const randomIndex = Math.floor(Math.random() * randomTasks.length)
     const randomTask = randomTasks[randomIndex]
-    setTasks([...tasks, randomTask])
+    setTasks((prevTasks) => [
+      ...prevTasks,
+      { id: crypto.randomUUID(), title: randomTask },
+    ])
   }
 
   const handleDeleteTask = () => {
@@ -35,7 +47,7 @@ const ToDo = () => {
       <div>
         <ul>
           {tasks.map((item) => (
-            <li key={item}> {item}</li>
+            <TaskItem key={item.id} item={item} />
           ))}
         </ul>
       </div>
