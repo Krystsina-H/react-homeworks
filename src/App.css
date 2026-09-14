@@ -1,101 +1,35 @@
-.dog-app {
-  width: min(1100px, calc(100% - 32px));
-  margin: 0 auto;
-  padding: 48px 0 64px;
-}
-.refresh-count {
-  color: var(--text-h);
-  font-size: 22px;
-  margin-bottom: 28px;
-}
-.controls {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: end;
-  justify-content: center;
-  gap: 16px;
-  margin-bottom: 36px;
-}
-.controls label {
-  display: grid;
-  gap: 8px;
-  color: var(--text-h);
-  font-weight: 600;
-  text-align: left;
-}
-.controls input,
-.controls select,
-.controls button {
+.app {
   box-sizing: border-box;
-  min-height: 44px;
-  padding: 8px 12px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--bg);
-  color: var(--text-h);
-  font: inherit;
+  min-height: 100vh;
+  padding: 40px;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
 }
-.controls input {
-  width: 112px;
+
+.app--light {
+  background-color: #ffffff;
+  color: #222222;
 }
-.controls select {
-  width: 220px;
+
+.app--dark {
+  background-color: #242424;
+  color: #ffffff;
 }
-.controls button {
-  cursor: pointer;
-  border-color: var(--accent);
-  background: var(--accent);
-  color: white;
+
+.controls-panel {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin: 24px 0;
 }
-.controls button:disabled {
-  cursor: wait;
-  opacity: 0.65;
+
+.header--light,
+.user-profile--light {
+  color: #222222;
 }
-.status {
-  margin: 48px 0;
-  color: var(--text-h);
-  font-size: 22px;
-}
-.error {
-  color: #c53030;
-}
-.dog-gallery {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  gap: 24px;
-}
-.dog-gallery img {
-  width: 100%;
-  height: 250px;
-  object-fit: cover;
-}
-.dog-card {
-  overflow: hidden;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: var(--social-bg);
-}
-.dog-card img {
-  display: block;
-  width: 100%;
-  height: 250px;
-  object-fit: cover;
-}
-.dog-card p {
-  padding: 14px;
-  color: var(--text-h);
-  font-weight: 600;
-}
-@media (max-width: 600px) {
-  .dog-app {
-    padding-top: 24px;
-  }
-  .controls {
-    align-items: stretch;
-    flex-direction: column;
-  }
-  .controls input,
-  .controls select {
-    width: 100%;
-  }
+
+.header--dark,
+.user-profile--dark {
+  color: #ffffff;
 }
