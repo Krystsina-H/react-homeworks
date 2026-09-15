@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import ThemeContext from '../contexts/ThemeContext'
+import ThemeContext from '../../shared/lib/theme'
 
 const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState('light')

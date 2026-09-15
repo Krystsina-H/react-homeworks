@@ -1,27 +1,25 @@
-import { useContext, useState } from 'react'
-import ListWithoutKey from './components/ListWithoutKey'
-import ListWithKey from './components/ListWithKey'
-import ThemeContext from './contexts/ThemeContext'
-import './App.css'
+import { useRef, useState } from 'react'
+import ListWithoutKey from './ListWithoutKey'
+import ListWithKey from './ListWithKey'
+import { Button } from '../../../shared/ui/button'
 
-const App = () => {
+const ListDemo = () => {
   const item = (id) => ({
     id,
     title: `Элемент ${id}`,
   })
   const arr = Array.from({ length: 10 }, (_, index) => item(index + 1))
-  console.log(arr)
+  const nextId = useRef(11)
 
-  const { theme, toggleTheme } = useContext(ThemeContext)
   const [items, setItems] = useState(arr)
   const [showElements, setShowElements] = useState(false)
 
   const addToStart = () => {
-    const newItem = item(items.length + 1)
+    const newItem = item(nextId.current++)
     setItems([newItem, ...items])
   }
   const addToEnd = () => {
-    const newItem = item(items.length + 1)
+    const newItem = item(nextId.current++)
     setItems([...items, newItem])
   }
   const removeFirst = () => {
@@ -43,22 +41,21 @@ const App = () => {
   }
 
   return (
-    <div className={`theme theme--${theme}`}>
-      <button onClick={() => toggleTheme()}>Сменить тему</button>
-      <button onClick={() => setShowElements((item) => !item)}>
+    <section className="list-demo" aria-label="Пример ключей в списках">
+      <Button onClick={() => setShowElements((item) => !item)}>
         {showElements ? 'Показать неправильный key' : 'Показать правильный key'}
-      </button>
+      </Button>
       {showElements ? (
         <ListWithKey items={items} />
       ) : (
         <ListWithoutKey items={items} />
       )}
-      <button onClick={addToStart}>Добавить в начало</button>
-      <button onClick={addToEnd}>Добавить в конец</button>
-      <button onClick={removeFirst}>Удалить первый</button>
-      <button onClick={shuffleItems}>Перемешать список</button>
-      <button onClick={updateRandom}>Обновить случайный элемент</button>
-    </div>
+      <Button onClick={addToStart}>Добавить в начало</Button>
+      <Button onClick={addToEnd}>Добавить в конец</Button>
+      <Button onClick={removeFirst}>Удалить первый</Button>
+      <Button onClick={shuffleItems}>Перемешать список</Button>
+      <Button onClick={updateRandom}>Обновить случайный элемент</Button>
+    </section>
   )
 }
-export default App
+export default ListDemo
