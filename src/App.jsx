@@ -1,36 +1,48 @@
-import { useContext, useState, useCallback } from 'react'
-import CounterButton from './components/CounterButton'
-import ItemList from './components/ItemList'
-import SearchInput from './components/SearchInput'
-import ThemeContext from './contexts/ThemeContext'
 import './App.css'
-
-const arr = Array.from({ length: 150 }, (_, index) => `Элемент ${index + 1}`)
+import { Routes, Route } from 'react-router'
+import { useState } from 'react'
+import NotFoundPage from './pages/NotFoundPage'
+import HomePage from './pages/HomePage'
+import CatalogPage from './pages/CatalogPage'
+import ProductPage from './pages/ProductPage'
+import PrivateRoute from './components/PrivateRoute'
+import ProfilePage from './pages/ProfilePage'
+import Layout from './components/Layout'
 
 const App = () => {
-  const { theme, toggleTheme } = useContext(ThemeContext)
-  const [count, setCount] = useState(0)
-  const [searchQuery, setSearchQary] = useState('')
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
 
-  const handleClick = useCallback(() => {
-    setCount((count) => count + 1)
-  }, [])
-
-  const handleChangeQuery = useCallback((searchQuery) => {
-    setSearchQary(searchQuery)
-  }, [])
+  function toggleAuth() {
+    setIsAuthenticated((currentValue) => !currentValue)
+  }
 
   return (
-    <div className={`theme theme--${theme}`}>
-      <button onClick={() => toggleTheme()}>Сменить тему</button>
+    <>
+      <Routes>
+        <Route
+          element={
+            <Layout
+              isAuthenticated={isAuthenticated}
+              onToggleAuth={toggleAuth}
+            />
+          }
+        >
+          <Route path="/" element={<HomePage />} />
+          <Route path="/catalog" element={<CatalogPage />} />
+          <Route path="/product/:id" element={<ProductPage />} />
 
-      <CounterButton count={count} handleClick={handleClick} />
-      <SearchInput
-        searchQuery={searchQuery}
-        handleChangeQuery={handleChangeQuery}
-      />
-      <ItemList arr={arr} searchQuery={searchQuery} />
-    </div>
+          <Route
+            path="/profile"
+            element={
+              <PrivateRoute isAuthenticated={isAuthenticated}>
+                <ProfilePage />
+              </PrivateRoute>
+            }
+          />
+          <Route path="*" element={<NotFoundPage />} />
+        </Route>
+      </Routes>
+    </>
   )
 }
 export default App
