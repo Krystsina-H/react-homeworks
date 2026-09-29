@@ -1,23 +1,25 @@
 import './App.css'
-import { Layout, Typography } from 'antd'
-import TaskPage from './pages/TaskPage'
+import ThemeContext from './context/ThemeContext'
+import { useContext } from 'react'
+import { Button, Typography } from 'antd'
+import Cart from './components/Cart'
+import Login from './components/Login'
 
-const { Header, Footer, Content } = Layout
-const { Title } = Typography
+const { Text } = Typography
 
 const App = () => {
+  const { theme, toggleTheme } = useContext(ThemeContext)
   return (
-    <Layout>
-      <Header>
-        <Title level={2} style={{ color: 'white', margin: 0 }}>
-          Список задач:
-        </Title>
-      </Header>
-      <Content>
-        <TaskPage />
-      </Content>
-      <Footer>Учебный проект с использованием antd</Footer>
-    </Layout>
+    <div className={`theme theme--${theme}`}>
+      <header className="app-header">
+        <Text className="storage-value">localStorage: theme = {theme}</Text>
+        <Button type="dashed" onClick={toggleTheme}>
+          Переключить тему
+        </Button>
+      </header>
+      <Cart />
+      <Login />
+    </div>
   )
 }
 export default App

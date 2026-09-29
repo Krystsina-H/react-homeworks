@@ -17,7 +17,7 @@
 
   font: 18px/145% var(--sans);
   letter-spacing: 0.18px;
-  color-scheme: light dark;
+  color-scheme: light;
   color: var(--text);
   background: var(--bg);
   font-synthesis: none;
@@ -35,11 +35,8 @@ body {
 }
 
 #root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
+  width: 100%;
   text-align: center;
-  border-inline: 1px solid var(--border);
   min-height: 100svh;
   display: flex;
   flex-direction: column;
@@ -91,25 +88,35 @@ code {
 }
 
 .theme {
+  box-sizing: border-box;
   display: flex;
+  min-height: 100svh;
+  width: 100%;
   align-items: center;
   flex-direction: column;
-  padding-top: 30px;
-}
-.theme--dark h1,
-.theme--dark h2 {
-  color: #ffffff;
-}
-
-.theme--light h1,
-.theme--light h2 {
+  gap: 24px;
+  padding: 40px 20px;
   color: #08060d;
+  background-color: #ffffff;
+  transition:
+    color 0.3s ease,
+    background-color 0.3s ease;
 }
 
 .theme--dark {
-  background-color: #242424;
   color: #ffffff;
-  min-height: 100svh;
+  background-color: #242424;
+  color-scheme: dark;
+}
+
+.theme--light {
+  color: #08060d;
+  background-color: #ffffff;
+  color-scheme: light;
+}
+
+.theme .ant-typography {
+  color: inherit;
 }
 .navigation {
   display: flex;
