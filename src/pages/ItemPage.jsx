@@ -13,7 +13,7 @@ import {
 } from 'antd'
 import { createItem, deleteItem, getItems } from '../services/itemsService'
 
-const { Paragraph, Title } = Typography
+const { Title } = Typography
 
 export default function ItemsPage() {
   const [form] = Form.useForm()
@@ -38,7 +38,6 @@ export default function ItemsPage() {
         setLoading(false)
       }
     }
-
     loadItems()
   }, [])
 
@@ -53,7 +52,7 @@ export default function ItemsPage() {
         userId: 1,
       })
 
-      setItems((currentItems) => [newItem, ...currentItems])
+      setItems((items) => [newItem, ...items])
       form.resetFields()
     } catch (requestError) {
       console.error(requestError)
@@ -67,10 +66,8 @@ export default function ItemsPage() {
     try {
       setDeletingId(id)
       setError('')
-
       await deleteItem(id)
-
-      setItems((currentItems) => currentItems.filter((item) => item.id !== id))
+      setItems((items) => items.filter((item) => item.id !== id))
     } catch (requestError) {
       console.error(requestError)
       setError('Не удалось удалить элемент. Попробуйте ещё раз.')
@@ -84,9 +81,6 @@ export default function ItemsPage() {
       <section className="items-page__content">
         <header className="items-page__header">
           <Title level={1}>Список элементов</Title>
-          <Paragraph type="secondary">
-            Данные загружаются через единый экземпляр Axios
-          </Paragraph>
         </header>
 
         <Card title="Добавить элемент" className="items-page__card">
