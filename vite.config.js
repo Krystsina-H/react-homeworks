@@ -5,11 +5,11 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/petstore': {
-        target: 'https://petstore3.swagger.io',
+      '/api': {
+        target: 'https://jsonplaceholder.typicode.com',
         changeOrigin: true,
         secure: true,
-        rewrite: (path) => path.replace(/^\/petstore/, '/api/v3'),
+        rewrite: (path) => path.replace(/^\/api/, ''),
       },
     },
   },
