@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   Alert,
   Button,
@@ -11,69 +12,86 @@ import {
   Spin,
   Typography,
 } from 'antd'
-import { createItem, deleteItem, getItems } from '../services/itemsService'
+import {
+  createItem,
+  deleteItem,
+  getItemById,
+  getItems,
+} from '../services/itemsService'
 
 const { Title } = Typography
 
 export default function ItemsPage() {
   const [form] = Form.useForm()
-  const [items, setItems] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [submitting, setSubmitting] = useState(false)
-  const [deletingId, setDeletingId] = useState(null)
-  const [error, setError] = useState('')
+  const [selectedId, setSelectedId] = useState(null)
+  const queryClient = useQueryClient()
 
-  useEffect(() => {
-    const loadItems = async () => {
-      try {
-        setLoading(true)
-        setError('')
+  const {
+    data: items = [],
+    isPending,
+    isError,
+    error,
+    refetch,
+    isFetching,
+  } = useQuery({
+    queryKey: ['items'],
+    queryFn: getItems,
+    select: (data) => data.slice(0, 10),
+  })
 
-        const data = await getItems()
-        setItems(data.slice(0, 10))
-      } catch (requestError) {
-        console.error(requestError)
-        setError('Не удалось загрузить список. Попробуйте ещё раз.')
-      } finally {
-        setLoading(false)
-      }
-    }
-    loadItems()
-  }, [])
+  const selectedItemQuery = useQuery({
+    queryKey: ['items', selectedId],
+    queryFn: () => getItemById(selectedId),
+    enabled: selectedId !== null,
+  })
+  const createMutation = useMutation({
+    mutationFn: createItem,
 
-  const handleSubmit = async ({ title }) => {
-    try {
-      setSubmitting(true)
-      setError('')
-
-      const newItem = await createItem({
-        title: title.trim(),
-        body: '',
-        userId: 1,
-      })
-
-      setItems((items) => [newItem, ...items])
+    onSuccess: (newItem) => {
       form.resetFields()
-    } catch (requestError) {
-      console.error(requestError)
-      setError('Не удалось создать элемент. Попробуйте ещё раз.')
-    } finally {
-      setSubmitting(false)
-    }
+
+      queryClient.setQueryData(['items'], (oldItems = []) => [
+        newItem,
+        ...oldItems,
+      ])
+
+      queryClient.invalidateQueries({
+        queryKey: ['items'],
+        exact: true,
+        refetchType: 'none',
+      })
+    },
+  })
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteItem,
+    onSuccess: (_data, deletedId) => {
+      queryClient.setQueryData(['items'], (oldItems = []) =>
+        oldItems.filter((item) => item.id !== deletedId)
+      )
+
+      if (selectedId === deletedId) {
+        setSelectedId(null)
+      }
+
+      queryClient.invalidateQueries({
+        queryKey: ['items'],
+        exact: true,
+        refetchType: 'none',
+      })
+    },
+  })
+
+  const handleSubmit = ({ title }) => {
+    createMutation.mutate({
+      title: title.trim(),
+      body: '',
+      userId: 1,
+    })
   }
 
-  const handleDelete = async (id) => {
-    try {
-      setDeletingId(id)
-      setError('')
-      await deleteItem(id)
-      setItems((items) => items.filter((item) => item.id !== id))
-    } catch (requestError) {
-      console.error(requestError)
-      setError('Не удалось удалить элемент. Попробуйте ещё раз.')
-    } finally {
-      setDeletingId(null)
-    }
+  const handleDelete = (id) => {
+    deleteMutation.mutate(id)
   }
 
   return (
@@ -103,25 +121,54 @@ export default function ItemsPage() {
             </Form.Item>
 
             <Form.Item className="items-form__button">
-              <Button type="primary" htmlType="submit" loading={submitting}>
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={createMutation.isPending}
+              >
                 Создать
               </Button>
             </Form.Item>
           </Form>
         </Card>
 
-        {error && (
+        {isError && (
           <Alert
             type="error"
-            message={error}
+            message="Не удалось загрузить список"
+            description={error?.message}
             showIcon
-            closable
-            onClose={() => setError('')}
           />
         )}
 
-        <Card title="Публикации" className="items-page__card">
-          {loading ? (
+        {createMutation.isError && (
+          <Alert
+            type="error"
+            message="Не удалось создать элемент"
+            description={createMutation.error?.message}
+            showIcon
+          />
+        )}
+
+        {deleteMutation.isError && (
+          <Alert
+            type="error"
+            message="Не удалось удалить элемент"
+            description={deleteMutation.error?.message}
+            showIcon
+          />
+        )}
+
+        <Card
+          title="Публикации"
+          className="items-page__card"
+          extra={
+            <Button onClick={() => refetch()} loading={isFetching}>
+              Обновить
+            </Button>
+          }
+        >
+          {isError ? null : isPending ? (
             <div className="items-page__loading">
               <Spin size="large" />
               <Typography.Text type="secondary">
@@ -147,14 +194,27 @@ export default function ItemsPage() {
                       okButtonProps={{ danger: true }}
                       onConfirm={() => handleDelete(item.id)}
                     >
-                      <Button danger loading={deletingId === item.id}>
+                      <Button
+                        danger
+                        loading={
+                          deleteMutation.isPending &&
+                          deleteMutation.variables === item.id
+                        }
+                      >
                         Удалить
                       </Button>
                     </Popconfirm>,
                   ]}
                 >
                   <List.Item.Meta
-                    title={item.title}
+                    title={
+                      <Button
+                        type="link"
+                        onClick={() => setSelectedId(item.id)}
+                      >
+                        {item.title}
+                      </Button>
+                    }
                     description={item.body || 'Описание отсутствует'}
                   />
                 </List.Item>
@@ -162,6 +222,36 @@ export default function ItemsPage() {
             />
           )}
         </Card>
+
+        {selectedItemQuery.isPending && selectedId !== null && (
+          <div className="items-page__loading">
+            <Spin />
+            <Typography.Text type="secondary">
+              Загрузка выбранного элемента…
+            </Typography.Text>
+          </div>
+        )}
+
+        {selectedItemQuery.isError && (
+          <Alert
+            type="error"
+            message="Не удалось загрузить элемент"
+            description={selectedItemQuery.error?.message}
+            showIcon
+          />
+        )}
+
+        {selectedItemQuery.data && (
+          <Card
+            title={`Элемент №${selectedItemQuery.data.id}`}
+            className="items-page__card"
+          >
+            <Title level={4}>{selectedItemQuery.data.title}</Title>
+            <Typography.Paragraph>
+              {selectedItemQuery.data.body || 'Описание отсутствует'}
+            </Typography.Paragraph>
+          </Card>
+        )}
       </section>
     </main>
   )
