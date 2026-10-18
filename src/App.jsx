@@ -2,7 +2,7 @@ import './App.css'
 import Header from './components/Header'
 import { useState, useEffect } from 'react'
 import InputTask from './components/InputTask'
-import ToDoList from './components/TodoList'
+import ToDoList from './components/ToDoList'
 import Filters from './components/Filters'
 import { Button, Card, Flex, Typography } from 'antd'
 
