@@ -1,17 +1,17 @@
 import { Segmented } from 'antd'
 
-const Filters = ({ filter, setFilter }) => {
+function TaskFilters({ value, onChange }) {
   return (
     <Segmented
-      block
-      value={filter}
-      onChange={setFilter}
+      value={value}
+      onChange={onChange}
       options={[
         { label: 'Все', value: 'all' },
         { label: 'Активные', value: 'active' },
-        { label: 'Завершённые', value: 'completed' },
+        { label: 'Выполненные', value: 'completed' },
       ]}
     />
   )
 }
-export default Filters
+
+export default TaskFilters
