@@ -1,20 +1,18 @@
 import { Alert, Card, Typography } from 'antd'
 import LoginForm from '../components/LoginForm.jsx'
 import useAuthApi from '../hooks/useAuthApi.js'
-import useAuth from '../hooks/useAuth.js'
-import { useNavigate } from 'react-router'
-import { Link } from 'react-router'
+import { useNavigate, Link } from 'react-router'
+import { tokenStorage } from '../utils/tokenStorage'
 const { Title } = Typography
 
 const LoginPage = () => {
   const navigate = useNavigate()
   const handleLogin = async (credentials) => {
     const response = await loginMutation.mutateAsync(credentials)
-    saveToken(response.access_token)
+    tokenStorage.set(response.access_token)
     navigate('/', { replace: true })
   }
   const { loginMutation } = useAuthApi()
-  const { saveToken } = useAuth()
   return (
     <main style={{ maxWidth: 480, margin: '40px auto', padding: 16 }}>
       <Card>

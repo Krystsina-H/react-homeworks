@@ -1,4 +1,6 @@
 import axios from 'axios'
+import { tokenStorage } from '../utils/tokenStorage'
+
 const apiClient = axios.create({
   baseURL: 'https://todo-redev.onrender.com/api',
   headers: {
@@ -7,12 +9,11 @@ const apiClient = axios.create({
 })
 
 apiClient.interceptors.request.use((config) => {
-  const token = localStorage.getItem('access_token')
+  const token = tokenStorage.get()
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
   }
-
   return config
 })
 
