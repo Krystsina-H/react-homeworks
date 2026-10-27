@@ -4,13 +4,14 @@ import TaskForm from '../components/TaskForm.jsx'
 import TaskItem from '../components/TaskItem.jsx'
 import { useState } from 'react'
 import TaskFilters from '../components/TaskFilters.jsx'
-import useAuth from '../hooks/useAuth.js'
+import { useNavigate } from 'react-router'
+import { tokenStorage } from '../utils/tokenStorage'
 
 const { Title } = Typography
 
 function TodoPage() {
   const [filter, setFilter] = useState('all')
-  const { clearToken } = useAuth()
+  const navigate = useNavigate()
   const {
     tasksQuery,
     createTaskMutation,
@@ -64,9 +65,13 @@ function TodoPage() {
       .map((item2) => item2.id)
     clearCompletedMutation.mutate(completedIds)
   }
+  const handleLogout = () => {
+    tokenStorage.remove()
+    navigate('/login', { replace: true })
+  }
   return (
     <main>
-      <Button onClick={clearToken}>Выйти</Button>
+      <Button onClick={handleLogout}>Выйти</Button>
       <Title level={2}>Мой список дел</Title>
       <TaskFilters value={filter} onChange={setFilter} />
       <TaskForm handleAdd={handleAdd} isAdding={createTaskMutation.isPending} />
