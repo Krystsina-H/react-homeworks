@@ -1,21 +1,21 @@
-import './App.css'
-import { Navigate, Route, Routes } from 'react-router'
-import TodoPage from './pages/TodoPage.jsx'
-import RegisterPage from './pages/RegisterPage.jsx'
-import LoginPage from './pages/LoginPage.jsx'
-import PrivateRoute from './components/PrivateRoute.jsx'
+import { useSyncExternalStore } from 'react'
+import { counterActions } from './actions/counterActions.js'
+import { counterStore } from './stores/CounterStore.js'
 
-function App() {
+export default function App() {
+  const count = useSyncExternalStore(
+    counterStore.subscribe,
+    counterStore.getState
+  )
+
   return (
-    <Routes>
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
-      <Route element={<PrivateRoute />}>
-        <Route path="/" element={<TodoPage />} />
-      </Route>
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+    <main>
+      <p>Текущее значение: {count}</p>
+      <div>
+        <button onClick={counterActions.decrement}>−1</button>
+        <button onClick={counterActions.increment}>+1</button>
+        <button onClick={counterActions.reset}>Сбросить</button>
+      </div>
+    </main>
   )
 }
-
-export default App
