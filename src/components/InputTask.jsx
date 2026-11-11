@@ -1,12 +1,19 @@
 import { useState } from 'react'
 import { Alert, Button, Flex, Input } from 'antd'
+import { useSelector, useDispatch } from 'react-redux'
+import { createAddTaskAction } from '../redux/actions/tasksActions'
 
-const InputTask = ({ setTasks }) => {
-  const [text, setText] = useState('')
+const InputTask = () => {
+  //const [text, setText] = useState('')
+  const dispatch = useDispatch()
+  const text = useSelector((store) => store.text.text)
+  console.log(text)
+
   const [error, setError] = useState('')
 
   const handleChange = (e) => {
-    setText(e.target.value)
+    // setText(e.target.value)
+    dispatch({ type: 'change', payload: e.target.value })
     setError('')
   }
   const handleKeyDown = (e) => {
@@ -20,11 +27,13 @@ const InputTask = ({ setTasks }) => {
       setError('Нельзя добавить пустую задачу')
       return
     }
-    setTasks((task) => [
-      ...task,
-      { id: crypto.randomUUID(), title: newTitle, isDone: false },
-    ])
-    setText('')
+    dispatch(createAddTaskAction(newTitle))
+    // setTasks((task) => [
+    //   ...task,
+    //   { id: crypto.randomUUID(), title: newTitle, isDone: false },
+    // ])
+    //setText('')
+    dispatch({ type: 'zero' })
     setError('')
   }
   return (

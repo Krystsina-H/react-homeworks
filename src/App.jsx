@@ -1,55 +1,75 @@
 import './App.css'
 import Header from './components/Header'
-import { useState, useEffect } from 'react'
 import InputTask from './components/InputTask'
 import ToDoList from './components/ToDoList'
 import Filters from './components/Filters'
 import { Button, Card, Flex, Typography } from 'antd'
+import { useSelector, useDispatch } from 'react-redux'
+import {
+  createDeleteTaskACtion,
+  createToggleTaskAction,
+  createEditTaskAction,
+  createClearCompletedAction,
+} from './redux/actions/tasksActions'
+import { createSetFilterAction } from './redux/actions/filterActions'
 
 const { Text } = Typography
 
 const App = () => {
-  const [tasks, setTasks] = useState(() => {
-    const savedTasks = localStorage.getItem('tasks')
-    if (savedTasks) {
-      return JSON.parse(savedTasks)
-    }
-    return []
-  })
-  useEffect(() => {
-    localStorage.setItem('tasks', JSON.stringify(tasks))
-  }, [tasks])
+  const tasks = useSelector((store) => store.tasks.tasks)
+  const tasksCount = tasks.filter((task) => !task.isDone).length
+  const dispatch = useDispatch()
+  // const [tasks, setTasks] = useState(() => {
+  //   const savedTasks = localStorage.getItem('tasks')
+  //   if (savedTasks) {
+  //     return JSON.parse(savedTasks)
+  //   }
+  //   return []
+  // })
+  // useEffect(() => {
+  //   localStorage.setItem('tasks', JSON.stringify(tasks))
+  // }, [tasks])
 
-  const [filter, setFilter] = useState('all')
+  //const [filter, setFilter] = useState('all')
 
   const handleDelete = (id) => {
-    setTasks((tasks) => tasks.filter((item) => item.id !== id))
+    dispatch(createDeleteTaskACtion(id))
+    // setTasks((tasks) => tasks.filter((item) => item.id !== id))
   }
 
   const isDoneChecked = (id) => {
-    setTasks((tasks) =>
-      tasks.map((item) =>
-        item.id == id ? { ...item, isDone: !item.isDone } : item
-      )
-    )
+    dispatch(createToggleTaskAction(id))
+    // setTasks((tasks) =>
+    //   tasks.map((item) =>
+    //     item.id == id ? { ...item, isDone: !item.isDone } : item
+    //   )
+    // )
   }
   const editTitle = (id, newTitle) => {
-    setTasks((tasks) =>
-      tasks.map((item) => (item.id == id ? { ...item, title: newTitle } : item))
-    )
+    dispatch(createEditTaskAction(id, newTitle))
+    // setTasks((tasks) =>
+    //   tasks.map((item) => (item.id == id ? { ...item, title: newTitle } : item))
+    // )
   }
 
   const filterTask = () => {
-    return tasks.filter((item) => {
-      if (filter === 'active') return !item.isDone
-      if (filter === 'completed') return item.isDone
-      return true
-    })
+    // return tasks.filter((item) => {
+    //   if (filter === 'active') return !item.isDone
+    //   if (filter === 'completed') return item.isDone
+    //   return true
+    // })
   }
   const clearCompleted = () => {
-    setTasks((tasks) => tasks.filter((item) => !item.isDone))
+    dispatch(createClearCompletedAction())
+    // setTasks((tasks) => tasks.filter((item) => !item.isDone))
   }
-  const tasksCount = tasks.filter((item) => !item.isDone).length
+
+  const filter = useSelector((store) => store.filter)
+
+  const handleFilterChange = (value) => {
+    dispatch(createSetFilterAction(value))
+  }
+  // const tasksCount = tasks.filter((item) => !item.isDone).length
   return (
     <Flex
       vertical
@@ -64,10 +84,10 @@ const App = () => {
       <Header />
       <Card style={{ width: '100%', maxWidth: 700 }}>
         <Flex vertical gap="large">
-          <InputTask setTasks={setTasks} />
-          <Filters filter={filter} setFilter={setFilter} />
+          <InputTask />
+          <Filters filter={filter} setFilter={handleFilterChange} />
           <ToDoList
-            tasks={filterTask()}
+            // tasks={filterTask()}
             handleDelete={handleDelete}
             isDoneChecked={isDoneChecked}
             editTitle={editTitle}

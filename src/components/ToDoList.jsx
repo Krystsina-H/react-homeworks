@@ -1,14 +1,24 @@
 import Task from './Task'
 import { Empty, Flex } from 'antd'
+import { useSelector, useDispatch } from 'react-redux'
 
-const ToDoList = ({ tasks, handleDelete, isDoneChecked, editTitle }) => {
+const ToDoList = ({ handleDelete, isDoneChecked, editTitle }) => {
+  const { tasks } = useSelector((store) => store.tasks)
+  const filter = useSelector((store) => store.filter)
+  console.log(tasks)
+  const visibleTasks = tasks.filter((task) => {
+    if (filter === 'active') return !task.isDone
+    if (filter === 'completed') return task.isDone
+    return true
+  })
+
   return (
     <Flex vertical gap="middle">
-      {tasks.length === 0 && (
-        <Empty description="Задач пока нет. Создай новую" />
+      {visibleTasks.length === 0 && (
+        <Empty description="Нет задач для выбранного фильтра" />
       )}
 
-      {tasks.map((item) => (
+      {visibleTasks.map((item) => (
         <Task
           key={item.id}
           task={item}
