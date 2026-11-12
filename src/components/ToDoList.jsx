@@ -1,6 +1,6 @@
 import Task from './Task'
 import { Empty, Flex } from 'antd'
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 
 const ToDoList = ({ handleDelete, isDoneChecked, editTitle }) => {
   const { tasks } = useSelector((store) => store.tasks)

@@ -3,6 +3,7 @@ import Header from './components/Header'
 import InputTask from './components/InputTask'
 import ToDoList from './components/ToDoList'
 import Filters from './components/Filters'
+import Users from './components/Users'
 import { Button, Card, Flex, Typography } from 'antd'
 import { useSelector, useDispatch } from 'react-redux'
 import {
@@ -100,6 +101,7 @@ const App = () => {
           </Flex>
         </Flex>
       </Card>
+      <Users />
     </Flex>
   )
 }

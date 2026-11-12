@@ -1,5 +1,3 @@
-import { act } from 'react'
-
 const initialValue = {
   tasks: [{ id: crypto.randomUUID(), title: 'Купить молоко', isDone: false }],
 }
