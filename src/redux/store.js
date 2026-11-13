@@ -1,28 +1,14 @@
-import {
-  legacy_createStore,
-  combineReducers,
-  applyMiddleware,
-  compose,
-} from 'redux'
-import inputTextReducer from './reducers/inputTetReducer'
-import tasksReducer from './reducers/tasksReducer'
-import filterReducer from './reducers/filterReducer'
-import usersReducer from './reducers/usersReducer'
-import { thunk } from 'redux-thunk'
-import loggerMiddleware from './middleware/loggerMiddleware'
+import { configureStore } from '@reduxjs/toolkit'
+import todoReducer from './slices/todoSlice'
+import filterReducer from './slices/filterSlice'
+import inputReducer from './slices/inputSlice'
 
-const rootReducer = combineReducers({
-  text: inputTextReducer,
-  tasks: tasksReducer,
-  filter: filterReducer,
-  users: usersReducer,
+const store = configureStore({
+  reducer: {
+    todo: todoReducer,
+    filter: filterReducer,
+    input: inputReducer,
+  },
 })
-
-const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
-
-const store = legacy_createStore(
-  rootReducer,
-  composeEnhancers(applyMiddleware(thunk, loggerMiddleware))
-)
 
 export default store

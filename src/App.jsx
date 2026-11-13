@@ -3,74 +3,43 @@ import Header from './components/Header'
 import InputTask from './components/InputTask'
 import ToDoList from './components/ToDoList'
 import Filters from './components/Filters'
-import Users from './components/Users'
 import { Button, Card, Flex, Typography } from 'antd'
 import { useSelector, useDispatch } from 'react-redux'
 import {
-  createDeleteTaskACtion,
-  createToggleTaskAction,
-  createEditTaskAction,
-  createClearCompletedAction,
-} from './redux/actions/tasksActions'
-import { createSetFilterAction } from './redux/actions/filterActions'
+  deleteTask,
+  toggle,
+  edit,
+  clearCompletedTask,
+} from './redux/slices/todoSlice'
+import { taskFilter } from './redux/slices/filterSlice'
 
 const { Text } = Typography
 
 const App = () => {
-  const tasks = useSelector((store) => store.tasks.tasks)
+  const tasks = useSelector((store) => store.todo.tasks)
+  const filter = useSelector((store) => store.filter)
   const tasksCount = tasks.filter((task) => !task.isDone).length
   const dispatch = useDispatch()
-  // const [tasks, setTasks] = useState(() => {
-  //   const savedTasks = localStorage.getItem('tasks')
-  //   if (savedTasks) {
-  //     return JSON.parse(savedTasks)
-  //   }
-  //   return []
-  // })
-  // useEffect(() => {
-  //   localStorage.setItem('tasks', JSON.stringify(tasks))
-  // }, [tasks])
-
-  //const [filter, setFilter] = useState('all')
 
   const handleDelete = (id) => {
-    dispatch(createDeleteTaskACtion(id))
-    // setTasks((tasks) => tasks.filter((item) => item.id !== id))
+    dispatch(deleteTask(id))
   }
 
   const isDoneChecked = (id) => {
-    dispatch(createToggleTaskAction(id))
-    // setTasks((tasks) =>
-    //   tasks.map((item) =>
-    //     item.id == id ? { ...item, isDone: !item.isDone } : item
-    //   )
-    // )
+    dispatch(toggle(id))
   }
   const editTitle = (id, newTitle) => {
-    dispatch(createEditTaskAction(id, newTitle))
-    // setTasks((tasks) =>
-    //   tasks.map((item) => (item.id == id ? { ...item, title: newTitle } : item))
-    // )
+    dispatch(edit({ id, newTitle }))
   }
 
-  const filterTask = () => {
-    // return tasks.filter((item) => {
-    //   if (filter === 'active') return !item.isDone
-    //   if (filter === 'completed') return item.isDone
-    //   return true
-    // })
-  }
   const clearCompleted = () => {
-    dispatch(createClearCompletedAction())
-    // setTasks((tasks) => tasks.filter((item) => !item.isDone))
+    dispatch(clearCompletedTask())
   }
-
-  const filter = useSelector((store) => store.filter)
 
   const handleFilterChange = (value) => {
-    dispatch(createSetFilterAction(value))
+    dispatch(taskFilter(value))
   }
-  // const tasksCount = tasks.filter((item) => !item.isDone).length
+
   return (
     <Flex
       vertical
@@ -88,7 +57,6 @@ const App = () => {
           <InputTask />
           <Filters filter={filter} setFilter={handleFilterChange} />
           <ToDoList
-            // tasks={filterTask()}
             handleDelete={handleDelete}
             isDoneChecked={isDoneChecked}
             editTitle={editTitle}
@@ -101,7 +69,6 @@ const App = () => {
           </Flex>
         </Flex>
       </Card>
-      <Users />
     </Flex>
   )
 }

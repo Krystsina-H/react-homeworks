@@ -3,7 +3,7 @@ import { Empty, Flex } from 'antd'
 import { useSelector } from 'react-redux'
 
 const ToDoList = ({ handleDelete, isDoneChecked, editTitle }) => {
-  const { tasks } = useSelector((store) => store.tasks)
+  const { tasks } = useSelector((store) => store.todo)
   const filter = useSelector((store) => store.filter)
   console.log(tasks)
   const visibleTasks = tasks.filter((task) => {
