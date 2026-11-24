@@ -2,16 +2,16 @@ import { useState } from 'react'
 import { Alert, Button, Flex, Input } from 'antd'
 import { useSelector, useDispatch } from 'react-redux'
 import { add } from '../redux/slices/todoSlice'
-import { setText, clearText } from '../redux/slices/inputSlice'
+import { change, zero } from '../redux/slices/inputSlice'
 
 const InputTask = () => {
   const dispatch = useDispatch()
-  const text = useSelector((store) => store.input.text)
+  const text = useSelector((store) => store.input.value)
   console.log(text)
   const [error, setError] = useState('')
 
   const handleChange = (e) => {
-    dispatch(setText(e.target.value))
+    dispatch(change(e.target.value))
     setError('')
   }
   const handleKeyDown = (e) => {
@@ -26,7 +26,7 @@ const InputTask = () => {
       return
     }
     dispatch(add(newTitle))
-    dispatch(clearText())
+    dispatch(zero())
     setError('')
   }
   return (
